@@ -9,6 +9,8 @@ export class OnPressDirective {
     @Output() ngRelease: EventEmitter<number> = new EventEmitter();
     @Output() ngPressing: EventEmitter<number> = new EventEmitter();
     @Input() start: number = 10;
+    @Input() step: number = 100;
+
     hasPrese: boolean = false;
     constructor(public ele: ElementRef) { }
     ngAfterViewInit() {
