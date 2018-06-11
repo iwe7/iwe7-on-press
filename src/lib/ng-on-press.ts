@@ -3,7 +3,10 @@ import { Directive, ElementRef, EventEmitter, Output, Input, NgZone } from '@ang
 import { interval, merge } from 'rxjs';
 import { switchMap, takeUntil, tap, map, filter, take, takeWhile } from 'rxjs/operators';
 
-@Directive({ selector: '[ngPress]' })
+@Directive({
+    selector: '[ngPress]',
+    exportAs: 'ngPress'
+})
 export class OnPressDirective {
     @Output() ngPress: EventEmitter<number> = new EventEmitter();
     @Output() ngRelease: EventEmitter<number> = new EventEmitter();
