@@ -1,5 +1,5 @@
 import { onTouchStart, onTouchEnd, onTouchCancel } from 'iwe7-util';
-import { Directive, ElementRef, EventEmitter, Output, Input, NgZone } from '@angular/core';
+import { Directive, ElementRef, EventEmitter, Output, Input, NgZone, Renderer2 } from '@angular/core';
 import { interval, merge } from 'rxjs';
 import { switchMap, takeUntil, tap, map, filter, take, takeWhile } from 'rxjs/operators';
 
@@ -15,12 +15,25 @@ export class OnPressDirective {
     @Input() step: number = 100;
 
     hasPrese: boolean = false;
-    constructor(public ele: ElementRef, public ngZone: NgZone) { }
+    constructor(
+        public ele: ElementRef,
+        public ngZone: NgZone,
+        public render: Renderer2
+    ) { }
     ngAfterViewInit() {
         this.ngZone.runOutsideAngular(() => {
             const touchStart$ = onTouchStart(this.ele.nativeElement);
             const touchEnd$ = onTouchEnd(this.ele.nativeElement);
             const touchCancel$ = onTouchCancel(this.ele.nativeElement);
+
+            this.ngRelease.subscribe(res => {
+                this.render.addClass(this.ele.nativeElement, 'ng-press-disabled');
+                setTimeout(() => {
+                    this.hasPrese = false;
+                    this.render.removeClass(this.ele.nativeElement, 'ng-press-disabled');
+                }, 200);
+            });
+
             const touchCancelOrEnd$ = merge(
                 touchEnd$,
                 touchCancel$
@@ -49,6 +62,8 @@ export class OnPressDirective {
                 tap(res => res.stopPropagation()),
                 // 初始化时间为0
                 map((e: TouchEvent) => 0),
+                // 防止重复触发
+                filter(res => !this.hasPrese),
                 switchMap(pressTime => {
                     // 开始计时
                     touchCancelOrEnd$.pipe(
@@ -73,6 +88,7 @@ export class OnPressDirective {
                         take(1),
                         tap(res => {
                             this.ngZone.run(() => {
+                                this.hasPrese = true;
                                 this.ngPress.emit();
                             });
                         })
