@@ -13,3 +13,5 @@
 | ngPress    | 长按开始       |
 | ngRelease  | 长按释放       |
 | ngPressing | 长按中,返回长按时长 |
+
+从github迁移到码云!
