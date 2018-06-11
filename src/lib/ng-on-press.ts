@@ -21,7 +21,13 @@ export class OnPressDirective {
             const touchStart$ = onTouchStart(this.ele.nativeElement);
             const touchEnd$ = onTouchEnd(this.ele.nativeElement);
             const touchCancel$ = onTouchCancel(this.ele.nativeElement);
-            const touchCancelOrEnd$ = merge(touchEnd$, touchCancel$).pipe(take(1));
+            const touchCancelOrEnd$ = merge(
+                touchEnd$,
+                touchCancel$
+            ).pipe(
+                tap(res => res.preventDefault()),
+                tap(res => res.stopPropagation()),
+                take(1));
             // 开始计时
             touchCancelOrEnd$.pipe(
                 takeWhile(res => this.hasPrese)
