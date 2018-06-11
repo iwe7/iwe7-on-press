@@ -24,7 +24,9 @@ export class OnPressDirective {
                 takeWhile(res => this.hasPrese)
             ).subscribe(res => {
                 // 释放 超过1秒可以触发释放
-                this.ngRelease.emit();
+                this.ngZone.run(() => {
+                    this.ngRelease.emit();
+                });
             });
             this.ngPress.pipe(
                 tap(res => this.hasPrese = true),
@@ -33,7 +35,11 @@ export class OnPressDirective {
                     return interval(100).pipe(
                         takeUntil(touchCancelOrEnd$),
                         map(res => res++),
-                        tap(res => this.ngPressing.emit(res / 10))
+                        tap(res => {
+                            this.ngZone.run(() => {
+                                this.ngPressing.emit(res / 10);
+                            });
+                        })
                     );
                 })
             ).subscribe();
@@ -55,7 +61,11 @@ export class OnPressDirective {
                         // 触发press
                         filter(res => res > this.start),
                         take(1),
-                        tap(res => this.ngPress.emit())
+                        tap(res => {
+                            this.ngZone.run(() => {
+                                this.ngPress.emit();
+                            });
+                        })
                     );
                 })
             ).subscribe();
