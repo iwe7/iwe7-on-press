@@ -11,6 +11,7 @@ export class OnPressDirective {
     @Output() ngPress: EventEmitter<number> = new EventEmitter();
     @Output() ngRelease: EventEmitter<number> = new EventEmitter();
     @Output() ngPressing: EventEmitter<number> = new EventEmitter();
+
     @Input() start: number = 10;
     @Input() step: number = 100;
 
